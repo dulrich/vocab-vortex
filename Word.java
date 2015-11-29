@@ -6,7 +6,19 @@ public class Word implements Comparable<Word> {
 	public String sorted = "";
 	
 	public int compareTo(Word w) {
-		return this.sorted.compareToIgnoreCase(w.sorted);
+		int order;
+		
+		order = this.sorted.compareToIgnoreCase(w.sorted);
+		
+		if (order == 0) {
+			order = this.raw.compareToIgnoreCase(w.raw);
+		}
+		
+		return order;
+	}
+	
+	public String toString() {
+		return this.sorted + "|" + this.raw;
 	}
 	
 	public Word(String str) {

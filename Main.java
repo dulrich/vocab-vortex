@@ -9,6 +9,9 @@ public class Main {
 		} catch(IOException e) {
 			System.out.println("file read failed");
 		}
-		System.out.println("done.");
+		
+		loader.ProcessWordList();
+		
+		System.out.println("Done.");
 	}
 }

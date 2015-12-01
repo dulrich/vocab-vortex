@@ -1,5 +1,5 @@
 ## Vocab Vortex
-Vocab Vortex vibrates verbs, varies vowels, numerates nouns, and alters adjectives in a brain-bending grammarian game
+Vibrate verbs, vary vowels, numerate nouns, and alter adjectives in a brain-bending grammar gambit
 
 There are two parts of the game, a native android app and a vert.x server component. The server computes word lists, saves progress, stats, and upgrades.
 

@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.TreeSet;
 
 public class WordLoader {
+	private int mListCount = 4;
+	
 	private ArrayList<String> mRawWordList;
 	
 	private ArrayList<TreeSet<Word>> mWordLists;
@@ -39,14 +41,14 @@ public class WordLoader {
 	}
 	
 	public void ProcessWordList() {
+		int i;
 		int len;
 		
 		mWordLists = new ArrayList<TreeSet<Word>>(4);
 		
-		mWordLists.add(new TreeSet<Word>());
-		mWordLists.add(new TreeSet<Word>());
-		mWordLists.add(new TreeSet<Word>());
-		mWordLists.add(new TreeSet<Word>());
+		for(i = 0;i < mListCount;i++) {
+			mWordLists.add(new TreeSet<Word>());
+		}
 		
 		for (String raw : this.mRawWordList) {
 			len = raw.length();
@@ -59,10 +61,10 @@ public class WordLoader {
 		}
 		
 		System.out.println("Processed:");
-		System.out.println("3: "+ mWordLists.get(3 - 3).size());
-		System.out.println("4: "+ mWordLists.get(4 - 3).size());
-		System.out.println("5: "+ mWordLists.get(5 - 3).size());
-		System.out.println("6: "+ mWordLists.get(6 - 3).size());
+		
+		for(i = 0;i < mListCount;i++) {
+			System.out.println((i+3)+": "+ mWordLists.get(i).size());
+		}
 	}
 }
 

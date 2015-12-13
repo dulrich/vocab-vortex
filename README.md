@@ -6,8 +6,8 @@ There are two parts of the game, a native android app and a vert.x server compon
 
 ## Components
 
-* [vocab-vertex](https://github.com/dulrich/vocab-vertex) is the server code
-* [vocab-vertex-app](https://github.com/dulrich/vocab-vertex-app) is the android app code
+* [vocab-vortex](https://github.com/dulrich/vocab-vortex) is the server code
+* [vocab-vortex-app](https://github.com/dulrich/vocab-vortex-app) is the android app code
 
 
 ## License

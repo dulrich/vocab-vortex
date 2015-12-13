@@ -28,6 +28,8 @@ public class Main {
 		
 		loader.ProcessWordList();
 		
+		loader.CalculateSubwords();
+		
 		System.out.println("Done.");
 	}
 }

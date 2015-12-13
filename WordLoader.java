@@ -18,15 +18,47 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.TreeSet;
+import java.util.TreeMap;
 
 public class WordLoader {
 	private int mListCount = 4;
 	
 	private ArrayList<String> mRawWordList;
 	
-	private ArrayList<TreeSet<Word>> mWordLists;
+	private ArrayList<TreeMap<String,Word>> mWordLists;
+	
+	public void CalculateSubwords() {
+		int i;
+		TreeMap<String,Word> sixLetterWords;
+		Iterator<String> sixLetterIter;
+		TreeMap<String,Word> curWords;
+		Iterator<String> curWordMapIter;
+		Word w;
+		
+		sixLetterWords = this.mWordLists.get(this.mListCount - 1);
+		sixLetterIter = sixLetterWords.keySet().iterator();
+		
+		while(sixLetterIter.hasNext()) {
+			w = sixLetterWords.get(sixLetterIter.next());
+			
+			for(i = 0;i < mListCount - 1;i++) { // 3,4,5 letter lists
+				curWords = this.mWordLists.get(i);
+				curWordMapIter = curWords.keySet().iterator();
+				
+				while(curWordMapIter.hasNext()) {
+					w.addSubword(curWords.get(curWordMapIter.next()));
+				}
+			}
+			
+			// if (w.size() > 1) {
+			// 	System.out.println(w);
+			// 	System.out.println(w.subwords().toString());
+			// 	System.out.println("=====");
+			// }
+		}
+	}
 	
 	public void LoadWordList(String path) throws IOException {
 		FileReader fileReader = new FileReader(path);
@@ -43,11 +75,14 @@ public class WordLoader {
 	public void ProcessWordList() {
 		int i;
 		int len;
+		String key;
+		TreeMap<String,Word> map;
+		Word wordNew,wordOld;
 		
-		mWordLists = new ArrayList<TreeSet<Word>>(4);
+		mWordLists = new ArrayList<TreeMap<String,Word>>(4);
 		
 		for(i = 0;i < mListCount;i++) {
-			mWordLists.add(new TreeSet<Word>());
+			mWordLists.add(new TreeMap<String,Word>());
 		}
 		
 		for (String raw : this.mRawWordList) {
@@ -57,7 +92,20 @@ public class WordLoader {
 				continue;
 			}
 			
-			mWordLists.get(len - 3).add(new Word(raw));
+			map = mWordLists.get(len - 3);
+			wordNew = new Word(raw);
+			key = wordNew.sorted();
+			
+			wordOld = map.get(key);
+			
+			if (wordOld == null) {
+				map.put(key,wordNew);
+			}
+			else {
+				wordOld.add(wordNew);
+			}
+			
+			// mWordLists.get(len - 3).add(new Word(raw));
 		}
 		
 		System.out.println("Processed:");

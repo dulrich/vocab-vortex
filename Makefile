@@ -24,6 +24,9 @@ all:
 clean:
 	rm -rf *.class
 
+debug:
+	javac -g *.java
+
 run:
 	java Main
 

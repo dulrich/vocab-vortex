@@ -14,36 +14,39 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import java.io.InputStream;
 import java.io.IOException;
+import java.util.Properties;
 
-public class Main {
-	public static void main(String[] args) {
-		Config conf = new Config();
-		WordLoader loader = new WordLoader();
-		
-		try {
-			conf.load("config.properties");
-			conf.setDefault("host","localhost");
-		} catch(IOException e) {
-			System.out.println("config.properties load failed");
-			System.out.println("aborting.");
-			return;
+public class Config {
+	private Properties mProp;
+	
+	public String setDefault(String name,String defaultValue) {
+		if (this.mProp.getProperty(name) == null) {
+			this.mProp.setProperty(name,defaultValue);
 		}
 		
-		try {
-			loader.LoadWordList(conf.setDefault("dict","/usr/share/dict/american-english"));
-		} catch(IOException e) {
-			System.out.println("file read failed");
-			System.out.println("aborting.");
-			return;
-		}
+		return this.mProp.getProperty(name);
+	}
+	
+	public Properties load(String path) throws IOException {
+		if (this.mProp == null) this.mProp = new Properties();
 		
-		loader.ProcessWordList();
+		InputStream propStream;
+		propStream = getClass().getClassLoader().getResourceAsStream(path);
+			
+		if (propStream == null) throw new IOException("null config.properties");
 		
-		loader.CalculateSubwords();
+		this.mProp.load(propStream);
 		
-		loader.StoreAllInDB(conf.properties());
-		
-		System.out.println("Done.");
+		return this.mProp;
+	}
+	
+	public Properties properties() {
+		return this.mProp;
+	}
+	
+	public Config() {
+		this.mProp = new Properties();
 	}
 }

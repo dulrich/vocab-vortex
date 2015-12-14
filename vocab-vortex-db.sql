@@ -14,6 +14,5 @@ CREATE TABLE IF NOT EXISTS vv_subword (
 	VVWordID INT NOT NULL DEFAULT 0,
 	VVWordSorted CHAR(6) NOT NULL DEFAULT '',
 	VVSubWord VARCHAR(6) NOT NULL DEFAULT '',
-	UNIQUE (VVWordID,VVSubWord),
 	UNIQUE (VVWordSorted,VVSubWord)
 ) engine=InnoDB;

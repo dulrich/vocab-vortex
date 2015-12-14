@@ -96,7 +96,7 @@ public class WordLoader {
 		for (String raw : this.mRawWordList) {
 			len = raw.length();
 			
-			if (len > 6 || len < 3) {
+			if (len > 6 || len < 3 || raw.indexOf("'") > -1) {
 				continue;
 			}
 			
@@ -141,6 +141,7 @@ public class WordLoader {
 			stmt_sorted = conn.prepareStatement(query_sorted);
 			stmt_sorted.setString(1,sorted);
 			
+			System.out.println("SEUQENCE : " + sorted);
 			stmt_sorted.execute();
 			stmt_sorted.close();
 			
@@ -165,6 +166,9 @@ public class WordLoader {
 				
 				pos = pos + 2;
 			}
+			
+			
+			System.out.println("storing " + (pos - 2) + " words");
 			
 			stmt_words.execute();
 			stmt_words.close();
@@ -191,6 +195,8 @@ public class WordLoader {
 				pos = pos + 2;
 			}
 			
+			System.out.println("storing " + (pos - 2) + " subwords");
+			System.out.println(stmt_subwords.toString());
 			stmt_subwords.execute();
 			stmt_subwords.close();
 		} catch (SQLException e) {
@@ -221,16 +227,18 @@ public class WordLoader {
 				
 				stmt_subwords = null;
 			}
+			
+			System.out.println("=====");
 		}
 	}
 	
-	public void StoreAllInDB() {
+	public void StoreAllInDB(Properties prop) {
 		Connection conn = null;
-		Properties prop = new Properties();
 		
-		// todo: load db settings from config.properties
-		prop.put("user","vv_user");
-		prop.put("password","vv_pass");
+		if (prop.getProperty("user") == null) return;
+		if (prop.getProperty("password") == null) return;
+		
+		if (prop.getProperty("host") == null) prop.setProperty("host","localhost");
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");//.newInstance();
@@ -240,7 +248,7 @@ public class WordLoader {
 		}
 		
 		try {
-			conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1/vocab_vortex",prop);
+			conn = DriverManager.getConnection("jdbc:mysql://"+prop.getProperty("host")+"/vocab_vortex",prop);
 		} catch (SQLException e) {
 			System.out.println("SQLException: " + e.getMessage());
 			System.out.println("SQLState: " + e.getSQLState());
@@ -251,7 +259,6 @@ public class WordLoader {
 		
 		TreeMap<String,Word> sixLetterWords;
 		Iterator<String> sixLetterIter;
-		
 		
 		sixLetterWords = this.mWordLists.get(this.mListCount - 1);
 		sixLetterIter = sixLetterWords.keySet().iterator();

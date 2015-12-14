@@ -1,0 +1,7 @@
+# required
+host=localshot
+user=vv_user
+password=vv_pass
+
+# optional
+#dict=/path/to/your/dictionary

@@ -30,6 +30,8 @@ public class Main {
 		
 		loader.CalculateSubwords();
 		
+		loader.StoreAllInDB();
+		
 		System.out.println("Done.");
 	}
 }

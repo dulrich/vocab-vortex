@@ -14,19 +14,34 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+CC     = gcc
+DEBUG  = -g
+CFLAGS = -W -Wall -I.. -pthread
 
+.PHONY: all c clean debug java memtest runjava runc
 
-.PHONY: all clean run
+all: | clean c java
 
-all:
-	javac *.java
+c:
+	$(CC) $(CFLAGS) $(DEBUG) -o vortex vocab-vortex.c
 
 clean:
 	rm -rf *.class
+	rm -rf Main
+	rm -rf vortex
 
 debug:
 	javac -g *.java
 
-run:
-	java Main
+java:
+	javac *.java
 
+memtest:
+	valgrind ./vortex
+
+runc:
+	chmod +x vortex
+	./vortex
+
+runjava:
+	java Main

@@ -23,43 +23,45 @@
 typedef uint32_t letter_mask;
 
 const letter_mask letter_masks[] = {
-	1 <<  0,
-	1 <<  1,
-	1 <<  2,
-	1 <<  3,
-	1 <<  4,
-	1 <<  5,
-	1 <<  6,
-	1 <<  7,
-	1 <<  8,
-	1 <<  9,
-	1 << 10,
-	1 << 11,
-	1 << 12,
-	1 << 13,
-	1 << 14,
-	1 << 15,
-	1 << 16,
-	1 << 17,
-	1 << 18,
-	1 << 19,
-	1 << 20,
-	1 << 21,
-	1 << 22,
-	1 << 23,
-	1 << 24,
-	1 << 25,
-	1 << 26
+	1 <<  8, // A
+	1 <<  9, // B
+	1 << 10, // C
+	1 << 11, // D
+	1 << 12, // E
+	1 << 13, // F
+	1 << 14, // G
+	1 << 15, // H
+	1 << 16, // I
+	1 << 17, // J
+	1 << 18, // K
+	1 << 19, // L
+	1 << 20, // M
+	1 << 21, // N
+	1 << 22, // O
+	1 << 23, // P
+	1 << 30, // Q
+	1 << 24, // R
+	1 << 25, // S
+	1 << 26, // T
+	1 << 27, // U
+	1 << 28, // V
+	1 << 29, // W
+	1 << 30, // X
+	1 << 30, // Y
+	1 << 30  // Z
 };
 
 const letter_mask empty_mask = 0;
 const letter_mask invalid_mask = 1 << 31;
 
+const letter_mask length_maskout = 0x000000FF;
+const letter_mask mask_maskout = 0xFFFFFF00;
+
 typedef struct Word {
-	int length;
-	letter_mask mask;
-	char raw[7];
-	char sorted[7];
+	// int length;
+	letter_mask mask_length;
+	char raw[6];
+	char sorted[6];
 	// struct Word** subwords;
 } word;
 
@@ -97,12 +99,18 @@ int letter_mask_subword(const word* longer,const word* shorter) {
 	int j = 0;
 	int p = -1;
 	
-	if ((shorter->mask & longer->mask) != shorter->mask) return 0;
+	if (
+		(shorter->mask_length & longer->mask_length & mask_maskout)
+		!=
+		(shorter->mask_length & mask_maskout)
+	) {
+		return 0;
+	}
 	
-	for(i = 0;i < shorter->length;i++) {
+	for(i = 0;i < (shorter->mask_length & length_maskout);i++) {
 		p = -1;
 		
-		for(j = c;j < longer->length;j++) {
+		for(j = c;j < (longer->mask_length & length_maskout);j++) {
 			if (shorter->sorted[i] == longer->sorted[j]) {
 				c = j + 1;
 				p = j;

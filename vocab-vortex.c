@@ -67,18 +67,21 @@ ecode word_create(word** w,const char* raw) {
 			return status;
 		}
 		
-		(*w)->length = 0;
-		(*w)->mask = empty_mask;
+		// (*w)->length = 0;
+		(*w)->mask_length = empty_mask;
 		memset((*w)->raw,0,sizeof (*w)->raw);
 		memset((*w)->sorted,0,sizeof (*w)->sorted);
 		// (*w)->subwords = NULL;
 	}
 	
-	(*w)->length = strlen(raw);
+	(*w)->mask_length = strlen(raw) & length_maskout;
 	
-	(*w)->mask = letter_mask_mask(raw,(*w)->length);
+	(*w)->mask_length |= letter_mask_mask(raw,((*w)->mask_length & length_maskout)) & mask_maskout;
 	
-	if ((*w)->mask == 0 || ((*w)->mask & invalid_mask) == invalid_mask) {
+	if (
+		((*w)->mask_length & mask_maskout) == 0
+		|| ((*w)->mask_length & invalid_mask & mask_maskout) == invalid_mask
+	) {
 		// printf("invalid mask %x (%x)for %s\n",(*w)->mask,invalid_mask,raw);
 		
 		word_destroy(*w);
@@ -88,14 +91,14 @@ ecode word_create(word** w,const char* raw) {
 		return status;
 	}
 	
-	strncpy((*w)->raw,raw,(*w)->length);
+	strncpy((*w)->raw,raw,((*w)->mask_length & length_maskout));
 	
-	for(i = 0;i < (*w)->length;i++) {
+	for(i = 0;i < ((*w)->mask_length & length_maskout);i++) {
 		(*w)->raw[i] = toupper((*w)->raw[i]);
 	}
 	
-	strncpy((*w)->sorted,(*w)->raw,(*w)->length);
-	word_sort((*w)->sorted,(*w)->length);
+	strncpy((*w)->sorted,(*w)->raw,((*w)->mask_length & length_maskout));
+	word_sort((*w)->sorted,((*w)->mask_length & length_maskout));
 	
 	// (*w)->subwords = (word**)malloc(sizeof(word*) * 100);
 	
@@ -211,7 +214,7 @@ ecode print_dictionary(word* dictionary[],int length) {
 	
 	for(i = 0;i<length;i++) {
 		if (dictionary[i] != NULL && dictionary[i]->raw != NULL) {
-			printf("%6d %s %s\n",i,dictionary[i]->raw,dictionary[i]->sorted);
+			printf("%6d %.6s %.6s\n",i,dictionary[i]->raw,dictionary[i]->sorted);
 		}
 	}
 	
@@ -242,16 +245,26 @@ int main(int argc,char* argv[]) {
 	
 	if (status != STATUS_OK) return unload_dictionary(dictionary,MAX_WORDS);
 	
-	// status = print_dictionary(dictionary,MAX_WORDS);
+	status = print_dictionary(dictionary,MAX_WORDS);
 	
 	for(i = 0; i < MAX_WORDS;i++) {
-		if (dictionary[i] != NULL && dictionary[i]->length == 6) {
+		if (
+			dictionary[i] != NULL
+			&& (dictionary[i]->mask_length & length_maskout) == 6
+		) {
 			word_subwords(dictionary,MAX_WORDS,dictionary[i]);
 			// printf("==========\n");
 		}
 	}
 	
 	printf("done [%d].\n",status);
+	
+	// int wordsize = sizeof(dictionary[0]->);
+	printf("word is %u bytes\n",sizeof(word));
+	printf("word->mask_length is %u bytes\n",sizeof(dictionary[0]->mask_length));
+	// printf("word->mask is %u bytes\n",sizeof(dictionary[0]->mask));
+	printf("word->raw is %u bytes\n",sizeof(dictionary[0]->raw));
+	printf("word->sorted is %u bytes\n",sizeof(dictionary[0]->sorted));
 	
 	return unload_dictionary(dictionary,MAX_WORDS);
 }

@@ -23,43 +23,43 @@
 typedef uint32_t letter_mask;
 
 const letter_mask letter_masks[] = {
-	1 <<  8, // A
-	1 <<  9, // B
-	1 << 10, // C
-	1 << 11, // D
-	1 << 12, // E
-	1 << 13, // F
-	1 << 14, // G
-	1 << 15, // H
-	1 << 16, // I
-	1 << 17, // J
-	1 << 18, // K
-	1 << 19, // L
-	1 << 20, // M
-	1 << 21, // N
-	1 << 22, // O
-	1 << 23, // P
-	1 << 30, // Q
-	1 << 24, // R
-	1 << 25, // S
-	1 << 26, // T
-	1 << 27, // U
-	1 << 28, // V
-	1 << 29, // W
-	1 << 30, // X
-	1 << 30, // Y
-	1 << 30  // Z
+	1 <<  0, // A
+	1 <<  1, // B
+	1 <<  2, // C
+	1 <<  3, // D
+	1 <<  4, // E
+	1 <<  5, // F
+	1 <<  6, // G
+	1 <<  7, // H
+	1 <<  8, // I
+	1 <<  9, // J
+	1 << 10, // K
+	1 << 11, // L
+	1 << 12, // M
+	1 << 13, // N
+	1 << 14, // O
+	1 << 15, // P
+	1 << 16, // Q
+	1 << 17, // R
+	1 << 18, // S
+	1 << 19, // T
+	1 << 20, // U
+	1 << 21, // V
+	1 << 22, // W
+	1 << 23, // X
+	1 << 24, // Y
+	1 << 25  // Z
 };
 
-const letter_mask empty_mask = 0;
+const letter_mask empty_mask   = 0;
+const letter_mask multi_mask   = 1 << 30;
 const letter_mask invalid_mask = 1 << 31;
 
-const letter_mask length_maskout = 0x000000FF;
-const letter_mask mask_maskout = 0xFFFFFF00;
-
 typedef struct Word {
-	// int length;
-	letter_mask mask_length;
+	unsigned int invalid :  1;
+	unsigned int multi   :  1;
+	unsigned int mask    : 26;
+	unsigned int length  :  4;
 	char raw[6];
 	char sorted[6];
 	// struct Word** subwords;
@@ -85,6 +85,9 @@ letter_mask letter_mask_mask(const char* word,int len) {
 			// printf("invalid char %u in %s\n",cur,word);
 			mask = mask | invalid_mask;
 		}
+		else if ((mask & letter_masks[cur - 'A']) == letter_masks[cur - 'A']) {
+			mask = mask | multi_mask;
+		}
 		else {
 			mask = mask | letter_masks[cur - 'A'];
 		}
@@ -99,18 +102,18 @@ int letter_mask_subword(const word* longer,const word* shorter) {
 	int j = 0;
 	int p = -1;
 	
-	if (
-		(shorter->mask_length & longer->mask_length & mask_maskout)
-		!=
-		(shorter->mask_length & mask_maskout)
-	) {
+	if ((shorter->mask & longer->mask) != shorter->mask) {
 		return 0;
 	}
 	
-	for(i = 0;i < (shorter->mask_length & length_maskout);i++) {
+	if (shorter->multi == 0) return 1;
+	
+	// printf("searching %.6s in %.6s\n",shorter->raw,longer->raw);
+	
+	for(i = 0;i < shorter->length;i++) {
 		p = -1;
 		
-		for(j = c;j < (longer->mask_length & length_maskout);j++) {
+		for(j = c;j < longer->length;j++) {
 			if (shorter->sorted[i] == longer->sorted[j]) {
 				c = j + 1;
 				p = j;

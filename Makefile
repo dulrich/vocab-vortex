@@ -18,7 +18,7 @@ CC     = gcc
 DEBUG  = -g
 CFLAGS = -W -Wall -I.. -pthread
 
-.PHONY: all c clean debug java memtest runjava runc
+.PHONY: all c clean debug java memtest prodc runjava runc
 
 all: | clean c java
 
@@ -38,6 +38,9 @@ java:
 
 memtest:
 	valgrind ./vortex
+
+prodc:
+	$(CC) $(CFLAGS) -O2 -o vortex vocab-vortex.c
 
 runc:
 	chmod +x vortex

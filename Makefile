@@ -23,7 +23,7 @@ CFLAGS = -W -Wall -I.. -pthread
 all: | clean c java
 
 c:
-	$(CC) $(CFLAGS) $(DEBUG) -o vortex vocab-vortex.c
+	$(CC) $(CFLAGS) $(DEBUG) -o vortex c/vocab-vortex.c
 
 clean:
 	rm -rf *.class
@@ -31,20 +31,20 @@ clean:
 	rm -rf vortex
 
 debug:
-	javac -g *.java
+	javac -g java/*.java
 
 java:
-	javac *.java
+	javac java/*.java
 
 memtest:
 	valgrind ./vortex
 
 prodc:
-	$(CC) $(CFLAGS) -O2 -o vortex vocab-vortex.c
+	$(CC) $(CFLAGS) -O2 -o vortex c/vocab-vortex.c
 
 runc:
 	chmod +x vortex
 	./vortex
 
 runjava:
-	java Main
+	cd java && java Main

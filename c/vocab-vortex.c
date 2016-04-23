@@ -1,16 +1,16 @@
 // Vocab Vortex: Vibrate verbs, vary vowels, numerate nouns, and alter adjectives in a brain-bending grammar gambit
 // Copyright (C) 2016  David Ulrich
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
 // by the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -132,10 +132,9 @@ ecode word_subwords(word* dictionary[],int length,const word* w) {
 	return status;
 }
 
-ecode load_dictionary(word* dictionary[],int length) {
+ecode load_dictionary(const char* path, word* dictionary[], int length) {
 	ecode status = STATUS_OK;
 	
-	const char* path = "/usr/share/dict/american-english";
 	FILE* file = NULL;
 	char* line = NULL;
 	size_t len = 0;
@@ -242,10 +241,19 @@ ecode unload_dictionary(word* dictionary[],int length) {
 int main(int argc,char* argv[]) {
 	ecode status = STATUS_OK;
 	
+	const char* default_path = "/usr/share/dict/american-english";
+	
 	word* dictionary[MAX_WORDS];
 	int i = 0;
 	
-	status = load_dictionary(dictionary,MAX_WORDS);
+	if (argc == 2) {
+		printf("loading dictionary %s\n", argv[1]);
+		status = load_dictionary(argv[1], dictionary, MAX_WORDS);
+	}
+	else {
+		printf("loading dictionary %s\n", default_path);
+		status = load_dictionary(default_path, dictionary, MAX_WORDS);
+	}
 	
 	if (status != STATUS_OK) return unload_dictionary(dictionary,MAX_WORDS);
 	
